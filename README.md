@@ -26,13 +26,14 @@ Define the block so:
 
 #### Example:
 
+  ```ruby
   Nonsense_function = ->(x,y) do
     (x**2 + y**2)
   end
   
   h = HeatMap.new 200, 200, (-10..10), (-10..10), &Nonsense_function
   h.image.save('output.png')
-
+  ```
 ![alt text](./output.png "Example Output")
 
 
