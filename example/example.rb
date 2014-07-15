@@ -84,7 +84,7 @@ w = EBO_Wrap.new :eps1=>1.24, :eps2=>1.54, :book_s=>5.11, :FROE=>0.2,\
 block = w.method(:alghorithm)
 
 # Initialize the image with inputs, generate and save heat map
-h = HeatMap.new :width => 100, :height => 200, 
+h = HeatMap.new :width => 300, :height => 500, :contours => 3,
                 :x_range => (0.05..0.35), :y_range => (0.08..0.18), &block
 
 h.image.save('./ebo_output.png')
