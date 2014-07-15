@@ -17,8 +17,8 @@ Define the block so:
  * x, y are the only vars (all else fix inside block)
  * x, y admit float values
  * x,y follow image processing coordinates mapping:
-   ** x will be ordinate (from top to bottom) axis and
-   ** y the abscissa (left to right)
+   * x will be ordinate (from top to bottom) axis and
+   * y the abscissa (left to right)
  * last line of block returns a value (float)
 
 #### Gem Requirements:
