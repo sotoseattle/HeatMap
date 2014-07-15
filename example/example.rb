@@ -23,9 +23,8 @@ class Ebolve
     @retain = 1.0 - input[:pYOUT]           # % dividend payout, format 0.16
     @years = input[:years]                  # total years horizon, i.e. 12
     @growth_years = input[:growth_years]    # years of LTG, i.e. 5
-
-    @ltg = nil                              # contant rate of eps growth, format 0.25
-    @r = nil                                # discount rate, format 0.08
+    @ltg = input[:ltg]                      # contant rate of eps growth, format 0.25
+    @r = input[:r]                          # discount rate, format 0.08
     self
   end
 
@@ -66,26 +65,29 @@ end
 # on 2 params: long_term_growth and discount_rate
 class EBO_Wrap
 
-  def initialize(inputs)
+  def initialize(x_var, y_var, inputs)
     @ebo = Ebolve.new(inputs)
+    @x, @y = x_var, y_var
   end
 
-  def alghorithm(x_var, y_var)
-    @ebo.ltg = x_var
-    @ebo.r = y_var
+  def alghorithm(x_value, y_value)
+    @ebo.instance_variable_set("@#{@x}", x_value)
+    @ebo.instance_variable_set("@#{@y}", y_value)
     @ebo.compute_ebo
   end
 end
 
 
 # Initialize wrapper and definition of lambda with method
-w = EBO_Wrap.new :eps1=>1.24, :eps2=>1.54, :book_s=>5.11, :FROE=>0.2,\
-                 :pYOUT=>0.16, :years=>12, :growth_years=>5
+initial_inputs = {:eps1=>1.24, :eps2=>1.54, :ltg=>0.241, :book_s=>5.11, :FROE=>0.2,\
+                  :r=>0.0960, :pYOUT=>0.16, :years=>12, :growth_years=>5}
+
+w = EBO_Wrap.new(:ltg, :r, initial_inputs)
 block = w.method(:alghorithm)
 
 # Initialize the image with inputs, generate and save heat map
 h = HeatMap.new :width => 300, :height => 500, :contours => 3,
-                :x_range => (0.05..0.35), :y_range => (0.08..0.18), &block
+                :x_range => (0.00..0.20), :y_range => (0.08..0.18), &block
 
 h.generate_image
 h.save_img('ebo_output.png')
