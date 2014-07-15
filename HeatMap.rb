@@ -80,4 +80,3 @@ class HeatMap
     stream.map{|e| ChunkyPNG::Color.from_hex("#{rainbow[e]}")}
   end
 end
-

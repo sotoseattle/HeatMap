@@ -17,8 +17,8 @@ Define the block so:
  * x, y are the only vars (all else fix inside block)
  * x, y admit float values
  * x,y follow image processing coordinates mapping:
- ** x will be ordinate (from top to bottom) axis and
- ** y the abscissa (left to right)
+   ** x will be ordinate (from top to bottom) axis and
+   ** y the abscissa (left to right)
  * last line of block returns a value (float)
 
 #### Gem Requirements:
@@ -34,7 +34,7 @@ Nonsense_function = ->(x,y) do
   (x**2 + y**2)
 end
 
-h = HeatMap.new :width => 200, :height => 200, :contours => 2,
+h = HeatMap.new :width => 300, :height => 300, :contours => 2,
     :x_range => (-10..10), 
     :y_range => (-10..10), 
     &Nonsense_function
