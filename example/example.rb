@@ -87,8 +87,10 @@ block = w.method(:alghorithm)
 h = HeatMap.new :width => 300, :height => 500, :contours => 3,
                 :x_range => (0.05..0.35), :y_range => (0.08..0.18), &block
 
-h.image.save('./ebo_output.png')
-
+h.generate_image
+h.save_img('ebo_output.png')
+h.legend.save('ebo_output_legend.png', :fast_rgb)
+puts h.metadata.inspect
 
 
 

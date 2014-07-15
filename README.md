@@ -11,15 +11,23 @@ The inputs are:
  * range of values for first parameter (x, horizontal, abcissa)
  * range of values for second parameter (y, vertical, ordinate)
  * the function to evaluate at each pixel of the image
-    
+
+The outputs are readeable as instance variables:
+
+ * img, the png image generated and rotated
+ * metadata stores the computed max, min and contour values
+ * legend, a png of the the linear heatmap with contour lines
+
 Define the block so:
 
  * x, y are the only vars (all else fix inside block)
  * x, y admit float values
- * x,y follow image processing coordinates mapping:
-   * x will be ordinate (from top to bottom) axis and
-   * y the abscissa (left to right)
  * last line of block returns a value (float)
+
+Consider that when processing x,y follow image processing coordinates mapping:
+ * x will be ordinate (from top to bottom) axis and
+ * y the abscissa (left to right)
+...but at the end we rotate the image counterclockwise 90 degrees so x becomes the horizontal axis.
 
 #### Gem Requirements:
 
@@ -39,9 +47,13 @@ h = HeatMap.new :width => 300, :height => 300, :contours => 2,
     :y_range => (-10..10), 
     &Nonsense_function
 
-h.image.save('output.png')
+h.generate_image
+h.save_img('output.png')
+h.legend.save('output_legend.png', :fast_rgb)
+puts h.metadata.inspect
 ```
 
 ![alt text](./output.png "Example Output")
+![alt text](./output_legend.png "Example Legend")
 
 

@@ -2,7 +2,6 @@ require 'rubygems'
 require 'color'
 require 'chunky_png'
 require 'narray'
-require 'awesome_print'
 
 module HeatPalette
   HSL_HUE_MIN = 0
@@ -17,19 +16,21 @@ end
 class HeatMap
 
   include HeatPalette
+
+  attr_reader :img, :metadata, :legend
+
+  LEGEND_HEIGHT = 20
   
   def initialize(inputs, &function)
     @width, @height = inputs[:width].to_int, inputs[:height].to_int
     @x_range, @y_range = inputs[:x_range], inputs[:y_range]
     @contours = inputs[:contours].to_i+1
     @evaluator = function
+    @img = nil
+    @metadata = {}
+    @legend = nil
   end
-
-  # Compose image from pixel stream.
-  def image
-    ChunkyPNG::Image.new(@width, @height, pixel_stream)
-  end
-
+  
   # Transforms range into array of predetermined size
   def explicit_range(rango, n_steps)
     a = n_steps==0 ? 1 : n_steps
@@ -37,6 +38,37 @@ class HeatMap
     rango = rango.step(jump).to_a
     rango.delete_at(-1)
     rango
+  end
+
+  # The faster way to save the image
+  def save_img(filename)
+    @img.save(filename, :fast_rgb)
+  end
+
+  # Scales values to color palete range. 
+  # The new matrix of colors becomes the pixels of the image to return.
+  def generate_image
+    matrix_values = compute_values
+    max, min = matrix_values.max.to_f, matrix_values.min.to_f
+    
+    hue_range = HeatPalette::HSL_HUE_MAX - HeatPalette::HSL_HUE_MIN
+    matrix_scaled = ((matrix_values - min)*(hue_range-1)/(max-min)).round
+    
+    contours_values = explicit_range(min..max, @contours).drop(1)
+    contours_scaled =  contours_values.map{|e| ((e - min)*(hue_range-1)/(max-min)).round}
+    rainbow = colorines(contours_scaled)
+    
+    @metadata["max_value"] = max
+    @metadata["min_value"] = min
+    @metadata["contours_values"] = contours_values
+    
+    legend_stream = rainbow.map{|e| ChunkyPNG::Color.from_hex(e)}
+    
+    @legend = ChunkyPNG::Image.new(hue_range, LEGEND_HEIGHT, legend_stream*LEGEND_HEIGHT)
+    
+    stream = matrix_scaled.flatten.to_a
+    stream.map!{|e| ChunkyPNG::Color.from_hex("#{rainbow[e]}")}
+    @img = ChunkyPNG::Image.new(@width, @height, stream).rotate_counter_clockwise
   end
 
   private
@@ -63,20 +95,4 @@ class HeatMap
     HeatPalette::Rainbow.map{|c| contours.include?(c) ? "000000" : c}
   end
 
-  # Scales values to color palete range. 
-  # The new matrix of colors becomes the pixels of the image to return.
-  def pixel_stream
-    matrix_values = compute_values
-    max, min = matrix_values.max.to_f, matrix_values.min.to_f
-    
-    factor = HeatPalette::HSL_HUE_MAX - HeatPalette::HSL_HUE_MIN - 1
-    matrix_scaled = ((matrix_values - min)*factor/(max-min)).round
-    
-    contours_values = explicit_range(min..max, @contours).drop(1)
-    contours_scaled =  contours_values.map{|e| ((e - min)*factor/(max-min)).round}
-    rainbow = colorines(contours_scaled)
-    
-    stream = matrix_scaled.flatten.to_a
-    stream.map{|e| ChunkyPNG::Color.from_hex("#{rainbow[e]}")}
-  end
 end
