@@ -43,8 +43,8 @@ Nonsense_function = ->(x,y) do
 end
 
 h = HeatMap.new :width => 300, :height => 300, :contours => 2,
-    :x_range => (-10..10), 
-    :y_range => (-10..10), 
+    :x_range => (0..10), 
+    :y_range => (0..10), 
     &Nonsense_function
 
 h.generate_image
@@ -54,6 +54,8 @@ puts h.metadata.inspect
 ```
 
 ![alt text](./output.png "Example Output")
+
+
 ![alt text](./output_legend.png "Example Legend")
 
 
