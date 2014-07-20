@@ -9,8 +9,8 @@ require 'rubygems'
 # The code is adapted from https://github.com/sotoseattle/EBOlve
 #
 # We want to see how the iintrinsic value varies when:
-#  - long_term_growth ranges from 5% to 35% => x (top to botom)
-#  - discount_rate ranges from 8% to 18%    => y (left to right)
+#  - long_term_growth ranges from 5% to 35% => x
+#  - discount_rate ranges from 8% to 18%    => y
 
 class Ebolve
   attr_accessor :ltg, :r
